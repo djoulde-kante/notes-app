@@ -78,9 +78,12 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
 
     const element = elements.find((el) => el.id === id)
     if (element) {
+      // On récupère la position du curseur à l'intérieur de l'élément (en tenant compte du padding)
+      const elemRect = e.target.getBoundingClientRect();
+      const padding = 16; // même valeur que dans le style
       setDragOffset({
-        x: clientX - element.position.x,
-        y: clientY - element.position.y,
+        x: clientX - elemRect.left + padding,
+        y: clientY - elemRect.top + padding
       })
     }
   }
@@ -144,33 +147,38 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       {!readOnly && (
-        <div className="flex gap-2 mb-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Ajouter un élément
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56">
-              <div className="grid gap-2">
-                <Button variant="ghost" onClick={addTextElement}>
-                  <Type className="h-4 w-4 mr-2" />
-                  {translations.editor.addText}
-                </Button>
-                <Button variant="ghost" onClick={addLinkElement}>
-                  <LinkIcon className="h-4 w-4 mr-2" />
-                  {translations.editor.addLink}
-                </Button>
-                <Button variant="ghost" onClick={addImageElement}>
-                  <ImageIcon className="h-4 w-4 mr-2" />
-                  {translations.editor.addImage}
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+        <div className="absolute right-6 top-2 flex gap-2 z-20">
+          <Button variant="ghost" size="icon" aria-label="Ajouter texte" style={{background:'rgba(255,255,255,0.22)'}} onClick={() => {
+            const newElement = {
+              id: Date.now().toString(),
+              type: "text",
+              content: "",
+              position: { x: 80, y: 80 },
+              style: { fontWeight: "normal", fontStyle: "normal", fontSize: 16, color: "#000" }
+            };
+            setElements([...elements, newElement]);
+          }}><span style={{fontWeight:600, color:'#4f8cff', fontSize:'1.15rem'}}>A</span></Button>
+          <Button variant="ghost" size="icon" aria-label="Ajouter image" style={{background:'rgba(255,255,255,0.22)'}} onClick={() => {
+            const newElement = {
+              id: Date.now().toString(),
+              type: "image",
+              src: "",
+              position: { x: 120, y: 120 },
+              size: { width: 200, height: 150 }
+            };
+            setElements([...elements, newElement]);
+          }}><span role="img" aria-label="image" style={{fontSize:'1.13rem', color:'#4f8cff'}}>🖼️</span></Button>
+          <Button variant="ghost" size="icon" aria-label="Ajouter lien" style={{background:'rgba(255,255,255,0.22)'}} onClick={() => {
+            const newElement = {
+              id: Date.now().toString(),
+              type: "link",
+              url: "",
+              position: { x: 160, y: 160 }
+            };
+            setElements([...elements, newElement]);
+          }}><span role="img" aria-label="lien" style={{fontSize:'1.13rem', color:'#4f8cff'}}>🔗</span></Button>
         </div>
       )}
 
@@ -181,24 +189,51 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
           return (
             <div
               key={element.id}
-              className={`absolute ${!readOnly && isSelected ? "ring-2 ring-primary" : ""}`}
+              tabIndex={!readOnly ? 0 : undefined}
+              aria-label={element.type === 'text' ? 'Élément texte' : element.type === 'image' ? 'Élément image' : 'Élément lien'}
+              className={`absolute group transition-transform duration-150 ${!readOnly && isSelected ? "ring-2 ring-primary z-30 scale-105 shadow-2xl" : "z-10"} ${isDragging && selectedElement === element.id ? "scale-110 shadow-2xl" : ""}`}
               style={{
                 left: `${element.position.x}px`,
                 top: `${element.position.y}px`,
+                cursor: !readOnly ? (isDragging && selectedElement === element.id ? "grabbing" : "move") : "default",
+                boxShadow: "0 4px 24px #b993f840, 0 1.5px 4px #b993f822",
+                borderRadius: 18,
+                background: "#fff",
+                minWidth: 120,
+                minHeight: 36,
+                outline: isSelected ? "2px solid #7c3aed" : "none",
+                transition: "box-shadow 0.18s, transform 0.18s, outline 0.18s, left 0.13s cubic-bezier(.4,1,.7,1), top 0.13s cubic-bezier(.4,1,.7,1)",
+                padding: '16px'
               }}
               onClick={() => !readOnly && setSelectedElement(element.id)}
+              onMouseDown={e => {
+                if (!readOnly && e.button === 0 && !e.target.closest('.canvas-action-btn')) {
+                  handleDragStart(e, element.id, e.clientX, e.clientY)
+                }
+              }}
+              onTouchStart={e => {
+                if (!readOnly && e.touches.length > 0 && !e.target.closest('.canvas-action-btn')) {
+                  handleDragStart(e, element.id, e.touches[0].clientX, e.touches[0].clientY)
+                }
+              }}
+              onKeyDown={e => {
+                if (!readOnly && (e.key === 'Enter' || e.key === ' ')) setSelectedElement(element.id)
+              }}
             >
               {!readOnly && isSelected && (
                 <div className="absolute -top-8 right-0 flex gap-1">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 bg-background shadow-sm"
-                    onMouseDown={(e) => {
+                    className="h-6 w-6 bg-background shadow-sm canvas-action-btn"
+                    title="Déplacer"
+                    aria-label="Déplacer"
+                    style={{cursor:'grab'}}
+                    onMouseDown={e => {
                       e.stopPropagation()
                       handleDragStart(e, element.id, e.clientX, e.clientY)
                     }}
-                    onTouchStart={(e) => {
+                    onTouchStart={e => {
                       e.stopPropagation()
                       if (e.touches.length > 0) {
                         handleDragStart(e, element.id, e.touches[0].clientX, e.touches[0].clientY)
@@ -210,8 +245,11 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 bg-background shadow-sm"
-                    onClick={(e) => {
+                    className="h-6 w-6 bg-background shadow-sm canvas-action-btn"
+                    title="Supprimer"
+                    aria-label="Supprimer"
+                    style={{cursor:'pointer'}}
+                    onClick={e => {
                       e.stopPropagation()
                       deleteElement(element.id)
                     }}
@@ -220,7 +258,6 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
                   </Button>
                 </div>
               )}
-
               {element.type === "text" && (
                 <TextElement
                   element={element}
@@ -229,23 +266,24 @@ export default function Canvas({ elements = [], setElements, readOnly = false })
                   updateElement={updateElement}
                 />
               )}
-
               {element.type === "link" && (
-                <LinkElement
-                  element={element}
-                  isSelected={isSelected}
-                  readOnly={readOnly}
-                  updateElement={updateElement}
-                  isValidYoutubeUrl={isValidYoutubeUrl}
-                />
+                <div style={{pointerEvents: isDragging && selectedElement === element.id ? 'none' : 'auto'}}>
+                  <LinkElement
+                    element={element}
+                    isSelected={isSelected}
+                    readOnly={readOnly}
+                    updateElement={updateElement}
+                    isValidYoutubeUrl={isValidYoutubeUrl}
+                  />
+                </div>
               )}
-
               {element.type === "image" && (
                 <ImageElement
                   element={element}
                   isSelected={isSelected}
                   readOnly={readOnly}
                   updateElement={updateElement}
+                  isDragging={isDragging && selectedElement === element.id}
                 />
               )}
             </div>

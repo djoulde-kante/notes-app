@@ -6,7 +6,8 @@ import { db } from "@/lib/db"
 export async function GET() {
   try {
     // Récupérer le token depuis les cookies
-    const token = cookies().get("auth_token")?.value
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
 
     if (!token) {
       return NextResponse.json({ user: null })

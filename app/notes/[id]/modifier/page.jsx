@@ -95,39 +95,61 @@ export default function EditNote() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <header className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <Button variant="ghost" size="icon" asChild>
+    <div className="min-h-screen bg-[#f8fbfe] flex flex-col">
+      {/* HEADER MODERNE */}
+      <header className="w-full py-6 px-4 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4" style={{background:'linear-gradient(90deg,#4f8cff 0%,#7c3aed 100%)', boxShadow:'0 2px 18px #b993f84a'}}>
+        <div className="flex items-center gap-3 w-full">
+          <Button variant="ghost" size="icon" asChild style={{background:'rgba(255,255,255,0.18)', boxShadow:'0 2px 8px #b993f84a'}}>
             <Link href={`/notes/${noteId}`}>
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 text-white" />
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold">{translations.notes.editNote}</h1>
+          <input
+            className="notes-title-input"
+            style={{
+              background:'rgba(255,255,255,0.24)',
+              border:'none',
+              borderRadius:'1.5em',
+              fontWeight:600,
+              fontSize:'1.13rem',
+              color:'#fff',
+              padding:'0.8em 1.6em',
+              width:'100%',
+              boxShadow:'0 2px 12px #b993f84a',
+              outline:'none',
+              letterSpacing:'-0.5px',
+              marginLeft:8
+            }}
+            placeholder="Titre de la note"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+            maxLength={60}
+            required
+          />
         </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {loading ? (
-          <div className="h-10 w-full max-w-md bg-muted animate-pulse rounded mb-4" />
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-            <div className="space-y-2">
-              <Label htmlFor="title">{translations.notes.noteTitle}</Label>
-              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-            </div>
-          </form>
-        )}
+        <div className="flex items-center gap-3 ml-6">
+          <Button
+            className="notes-btn"
+            style={{minWidth:120, marginLeft:16, borderRadius:'2em', fontWeight:700, fontSize:'1.04rem'}}
+            type="button"
+            disabled={saving || !title}
+            onClick={handleSubmit}
+          >
+            {saving ? translations.common.loading : "Enregistrer"}
+          </Button>
+        </div>
       </header>
+      {error && (
+        <Alert variant="destructive" className="max-w-2xl mx-auto mt-4">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       {loading ? (
         <div className="h-96 bg-muted animate-pulse rounded" />
       ) : (
         <div className="mb-8">
+          {/* Canvas avec toutes les améliorations récentes (padding, drag fluide, pointer-events, modale non déplaçable, etc.) */}
           <Canvas elements={elements} setElements={setElements} />
         </div>
       )}

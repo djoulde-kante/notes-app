@@ -68,43 +68,55 @@ export default function NewNote() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
-      <header className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/notes">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold">{translations.notes.createNote}</h1>
-        </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-          <div className="space-y-2">
-            <Label htmlFor="title">{translations.notes.noteTitle}</Label>
-            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
-        </form>
-      </header>
-
-      <div className="mb-8">
+  <div className="min-h-screen bg-[#f8fbfe] flex flex-col">
+    {/* HEADER MODERNE */}
+    <header className="notes-header flex items-center justify-between px-6 py-5 relative z-10" style={{borderBottom: 'none'}}>
+      <div className="flex items-center gap-3 w-full">
+        <Button variant="ghost" size="icon" asChild style={{background:'rgba(255,255,255,0.18)', boxShadow:'0 2px 8px #b993f84a'}}>
+          <Link href="/notes">
+            <ArrowLeft className="h-5 w-5 text-white" />
+          </Link>
+        </Button>
+        <input
+          className="notes-title-input"
+          style={{
+            background:'rgba(255,255,255,0.24)',
+            border:'none',
+            borderRadius:'1.5em',
+            fontWeight:600,
+            fontSize:'1.13rem',
+            color:'#fff',
+            padding:'0.8em 1.6em',
+            width:'100%',
+            boxShadow:'0 2px 12px #b993f84a',
+            outline:'none',
+            letterSpacing:'-0.5px',
+            marginLeft:8
+          }}
+          placeholder="Titre de la note"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          maxLength={60}
+        />
+      </div>
+      <div className="flex items-center gap-3 ml-6">
+        <Button
+          className="notes-btn"
+          style={{minWidth:120, marginLeft:16, borderRadius:'2em', fontWeight:700, fontSize:'1.04rem'}}
+          type="button"
+          disabled={loading || !title}
+          onClick={handleSubmit}
+        >
+          {loading ? translations.common.loading : "Enregistrer"}
+        </Button>
+      </div>
+    </header>
+    {/* CANVAS ET ELEMENTS FULL WIDTH */}
+    <div className="flex-1 flex flex-col items-center justify-start px-0 pb-8 w-full" style={{background:'#f8fbfe'}}>
+      <div className="w-full" style={{maxWidth:'100vw'}}>
         <Canvas elements={elements} setElements={setElements} />
       </div>
-
-      <div className="flex justify-end gap-4 max-w-2xl">
-        <Button variant="outline" asChild>
-          <Link href="/notes">{translations.common.cancel}</Link>
-        </Button>
-        <Button type="submit" disabled={loading} onClick={handleSubmit}>
-          {loading ? translations.common.loading : translations.common.save}
-        </Button>
-      </div>
     </div>
-  )
+  </div>
+)
 }

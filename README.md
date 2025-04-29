@@ -36,25 +36,25 @@ NoteFlex est une application web de prise de notes qui permet aux utilisateurs d
 
 Créez un fichier `.env.local` à la racine du projet avec les variables suivantes :
 
-\`\`\`
+```bash
 DB_HOST=localhost
 DB_USER=votre_utilisateur_mysql
 DB_PASSWORD=votre_mot_de_passe_mysql
 DB_NAME=noteflex
 JWT_SECRET=votre_cle_secrete
-\`\`\`
+```
 
 ### Installation des dépendances
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### Démarrage de l'application
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 L'application sera accessible à l'adresse http://localhost:3000
 

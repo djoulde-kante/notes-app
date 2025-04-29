@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+
 export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -40,52 +41,55 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">{translations.auth.loginTitle}</h1>
-          <p className="mt-2 text-gray-600">
-            {translations.auth.dontHaveAccount}{" "}
-            <Link href="/inscription" className="text-primary hover:underline">
-              {translations.common.register}
-            </Link>
-          </p>
-        </div>
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="email">{translations.common.email}</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+    <>
+      <div className="bg-circles">
+        <div className="circle circle1" />
+        <div className="circle circle2" />
+      </div>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="auth-card">
+          <h1 className="auth-title">NoteFlex</h1>
+          <div className="auth-subtitle">Organisez vos idées en toute liberté</div>
+          <div className="auth-tabs">
+            <Link href="/connexion" className="auth-tab active">Connexion</Link>
+            <Link href="/inscription" className="auth-tab">Inscription</Link>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">{translations.common.password}</Label>
-            <Input
+          {error && (
+            <Alert variant="destructive" style={{marginBottom: '1em'}}>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <form onSubmit={handleSubmit}>
+            <input
+              className="auth-input"
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className="auth-input"
               id="password"
               type="password"
+              placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </div>
-
-          <div className="text-right">
-            <Link href="/mot-de-passe-oublie" className="text-sm text-primary hover:underline">
-              {translations.auth.forgotPassword}
-            </Link>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? translations.common.loading : translations.common.login}
-          </Button>
-        </form>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.7em'}}>
+              <span />
+              <Link href="/mot-de-passe-oublie" className="auth-link" style={{fontSize:'0.98em'}}>
+                Mot de passe oublié ?
+              </Link>
+            </div>
+            <button type="submit" className="auth-btn" disabled={loading}>
+              {loading ? translations.common.loading : "Se connecter"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

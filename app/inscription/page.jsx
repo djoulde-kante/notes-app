@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+
 export default function Register() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -53,62 +54,67 @@ export default function Register() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">{translations.auth.registerTitle}</h1>
-          <p className="mt-2 text-gray-600">
-            {translations.auth.alreadyHaveAccount}{" "}
-            <Link href="/connexion" className="text-primary hover:underline">
-              {translations.common.login}
-            </Link>
-          </p>
+  <>
+    <div className="bg-circles">
+      <div className="circle circle1" />
+      <div className="circle circle2" />
+    </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="auth-card">
+        <h1 className="auth-title">NoteFlex</h1>
+        <div className="auth-subtitle">Organisez vos idées en toute liberté</div>
+        <div className="auth-tabs">
+          <Link href="/connexion" className="auth-tab">Connexion</Link>
+          <Link href="/inscription" className="auth-tab active">Inscription</Link>
         </div>
-
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" style={{marginBottom: '1em'}}>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">{translations.common.name}</Label>
-            <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">{translations.common.email}</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">{translations.common.password}</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">{translations.common.confirmPassword}</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? translations.common.loading : translations.common.register}
-          </Button>
+        <form onSubmit={handleSubmit}>
+          <input
+            className="auth-input"
+            id="name"
+            type="text"
+            placeholder="Nom"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <input
+            className="auth-input"
+            id="email"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            className="auth-input"
+            id="password"
+            type="password"
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <input
+            className="auth-input"
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirmer le mot de passe"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <button type="submit" className="auth-btn" disabled={loading}>
+            {loading ? translations.common.loading : "S'inscrire"}
+          </button>
         </form>
       </div>
     </div>
-  )
+  </>
+)
 }

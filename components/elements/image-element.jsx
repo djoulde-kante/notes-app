@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ImageIcon, Upload } from "lucide-react"
 
-export default function ImageElement({ element, isSelected, readOnly, updateElement }) {
+export default function ImageElement({ element, isSelected, readOnly, updateElement, isDragging }) {
   const [src, setSrc] = useState(element.src)
   const [error, setError] = useState("")
   const [isResizing, setIsResizing] = useState(false)
@@ -122,7 +122,7 @@ export default function ImageElement({ element, isSelected, readOnly, updateElem
         <>
           {src ? (
             <div className="relative w-full h-full">
-              <img src={src || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
+              <img src={src || "/placeholder.svg"} alt="" className="w-full h-full object-cover" style={isDragging ? {pointerEvents:'none'} : {}} />
               {isSelected && (
                 <div
                   className="absolute bottom-0 right-0 w-4 h-4 bg-primary cursor-se-resize"
